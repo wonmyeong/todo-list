@@ -7,10 +7,30 @@
 //전체 탭을 누르면 다시 전체 아이템으로 돌아온다.
 
 let taskInput = document.getElementById("task-input");
-let addBUtton = document.getElementById("add-button");
-
+let addButton = document.getElementById("add-button");
+let taskAll = document.querySelector(".task__all");
+let taskOngoing = document.querySelector(".task__ongoing");
+let taskFinished = document.querySelector(".task__finished");
 let taskList = [];
-addBUtton.addEventListener("click", addTask);
+let ongoingTask = [];
+let FinishedTask = [];
+let mode = "all";
+
+addButton.addEventListener("click", addTask);
+taskAll.addEventListener("click", () => {
+  mode = "all";
+  render();
+});
+
+taskOngoing.addEventListener("click", () => {
+  mode = "ongoing";
+  render();
+});
+
+taskFinished.addEventListener("click", () => {
+  mode = "done";
+  render();
+});
 
 function addTask() {
   let taskContent = null;
@@ -20,30 +40,50 @@ function addTask() {
     isComplete: false,
   };
   taskList.push(task);
-  console.log(taskList);
   render();
 }
 
 function render() {
   let resultHTML = "";
-  for (let i = 0; i < taskList.length; i++) {
-    if (taskList[i].isComplete) {
-      resultHTML += `<div class="task">
-        <div class="task-done">${taskList[i].taskContent}</div>
-        <div>
-          <button onClick="toggleComplete('${taskList[i].id}')">Check</button>
-          <button onClick="deleteTask('${taskList[i].id}')">delete</button>
-        </div>
-      </div>`;
-    } else {
-      resultHTML += `<div class="task">
-        <div >${taskList[i].taskContent}</div>
-        <div>
-          <button onClick="toggleComplete('${taskList[i].id}')">Check</button>
-          <button onClick="deleteTask('${taskList[i].id}')">delete</button>
-        </div>
-      </div>`;
+
+  if (mode === "all") {
+    
+    for (let i = 0; i < taskList.length; i++) {
+      if (taskList[i].isComplete) {
+        resultHTML += `<div class="task">
+          <div class="task-done">${taskList[i].taskContent}</div>
+          <div>
+            <button onClick="toggleComplete('${taskList[i].id}')">Check</button>
+            <button onClick="deleteTask('${taskList[i].id}')">delete</button>
+          </div>
+        </div>`;
+      } else {
+        resultHTML += `<div class="task">
+          <div >${taskList[i].taskContent}</div>
+          <div>
+            <button onClick="toggleComplete('${taskList[i].id}')">Check</button>
+            <button onClick="deleteTask('${taskList[i].id}')">delete</button>
+          </div>
+        </div>`;
+      }
     }
+  } else if (mode === "ongoing") {
+    console.log("ongoing");
+    taskList.map((todo) => {
+      if (todo.isComplete == true) {
+        resultHTML += `<div class="task">
+          <div >${todo.taskContent}</div>
+        </div>`;
+      }
+    });
+  } else {
+    taskList.map((todo) => {
+      if (todo.isComplete == false) {
+        resultHTML += `<div class="task">
+          <div >${todo.taskContent}</div>
+        </div>`;
+      }
+    });
   }
   document.getElementById("task-board").innerHTML = resultHTML;
 }
